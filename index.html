@@ -1,0 +1,1587 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Financial Management & Markets — ARU Lecture 7</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===================== RESET & ROOT ===================== */
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{
+  min-height:100vh;
+  background:#f5f2e8 !important;
+  background-color:#f5f2e8 !important;
+  font-family:'Source Sans 3',Arial,sans-serif;
+  color:#1a2744;
+}
+:root{
+  --navy:#1a2744;
+  --navy2:#243358;
+  --cream:#f5f2e8;
+  --cream2:#ede9d8;
+  --gold:#c9a84c;
+  --gold2:#e8c96a;
+  --red:#c0392b;
+  --green:#1e8449;
+  --sh:0 3px 16px rgba(26,39,68,.14);
+  --sh2:0 6px 32px rgba(26,39,68,.18);
+}
+
+/* ===================== HEADER ===================== */
+#appHeader{
+background:var(–navy);
+color:#fff;
+padding:10px 18px;
+display:none;
+align-items:center;
+justify-content:space-between;
+position:sticky;top:0;z-index:200;
+box-shadow:var(–sh2);
+}
+.hlogo{font-family:‘Playfair Display’,serif;font-size:18px;color:var(–gold);letter-spacing:1px;}
+.htitle{font-size:12px;opacity:.8;margin-top:2px;}
+.htimer{
+background:rgba(255,255,255,.12);
+border:1px solid rgba(255,255,255,.25);
+border-radius:7px;padding:5px 12px;
+font-size:17px;font-weight:700;
+font-family:monospace;letter-spacing:2px;color:#fff;
+}
+.htimer.warn{color:#f1c40f;}
+.htimer.danger{color:#e74c3c;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+.hbadge{background:var(–gold);color:var(–navy);border-radius:20px;padding:3px 12px;font-size:12px;font-weight:700;}
+
+/* ===================== PROGRESS ===================== */
+#progressBar{background:var(–navy2);padding:8px 18px;display:none;}
+.ptrack{background:rgba(255,255,255,.18);border-radius:8px;height:7px;overflow:hidden;}
+.pfill{height:100%;background:linear-gradient(90deg,var(–gold),var(–gold2));border-radius:8px;transition:width .5s;}
+.plabels{display:flex;justify-content:space-between;margin-top:5px;}
+.plabel{font-size:10px;color:rgba(255,255,255,.55);font-weight:500;}
+.plabel.done{color:var(–gold);}
+.plabel.cur{color:#fff;font-weight:700;}
+
+/* ===================== SCREENS ===================== */
+.screen{display:none;padding:16px;max-width:860px;margin:0 auto;}
+.screen.active{display:block;}
+
+/* ===================== LANDING ===================== */
+.card{
+background:#fff;border-radius:14px;
+box-shadow:var(–sh2);
+border-top:5px solid var(–navy);
+padding:32px 24px;
+margin-top:24px;
+}
+.card h1{font-family:‘Playfair Display’,serif;font-size:26px;color:var(–navy);margin-bottom:6px;text-align:center;}
+.subtitle{text-align:center;color:#666;font-size:15px;margin-bottom:24px;}
+.mod-pills{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:20px 0;}
+@media(max-width:560px){.mod-pills{grid-template-columns:repeat(3,1fr);}}
+.mpill{background:var(–cream);border:2px solid var(–cream2);border-radius:9px;padding:10px 6px;text-align:center;font-size:11px;font-weight:600;color:var(–navy);}
+.mpill span{display:block;font-size:17px;font-weight:700;color:var(–gold);margin-bottom:3px;}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;}
+@media(max-width:480px){.rules{grid-template-columns:1fr;}}
+.rule{background:var(–cream);border-radius:8px;padding:10px 12px;font-size:13px;display:flex;gap:9px;align-items:flex-start;}
+.rule-icon{font-size:17px;flex-shrink:0;}
+.name-row{display:flex;gap:10px;max-width:400px;margin:0 auto 12px;}
+.name-in{
+flex:1;padding:13px 16px;
+border:2px solid var(–cream2);border-radius:9px;
+font-size:15px;font-family:inherit;outline:none;
+transition:border .2s;
+}
+.name-in:focus{border-color:var(–navy);}
+.err{color:var(–red);font-size:12px;text-align:center;margin-top:4px;display:none;}
+
+/* ===================== BUTTONS ===================== */
+.btn{
+display:inline-block;padding:12px 26px;border-radius:9px;
+font-family:inherit;font-size:15px;font-weight:700;
+cursor:pointer;border:none;transition:all .18s;
+}
+.btn-navy{background:var(–navy);color:#fff;}
+.btn-navy:hover{background:var(–navy2);transform:translateY(-1px);box-shadow:var(–sh);}
+.btn-navy:disabled{background:#aaa;cursor:not-allowed;transform:none;}
+.btn-gold{background:var(–gold);color:var(–navy);}
+.btn-gold:hover{background:var(–gold2);}
+.btn-sm{padding:7px 16px;font-size:13px;}
+.btn-hidden{display:none!important;}
+
+/* ===================== MODULE HEADER ===================== */
+.mod-head{background:var(–navy);color:#fff;border-radius:13px 13px 0 0;padding:20px 22px;}
+.mod-num{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(–gold);font-weight:700;margin-bottom:3px;}
+.mod-title{font-family:‘Playfair Display’,serif;font-size:22px;}
+.mod-meta{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-size:12px;opacity:.75;}
+.mod-body{background:#fff;border-radius:0 0 13px 13px;padding:22px;box-shadow:var(–sh);margin-bottom:20px;}
+
+/* ===================== SCORE BAR ===================== */
+.sbar{
+background:var(–cream);border-radius:9px;padding:10px 16px;
+display:flex;justify-content:space-between;align-items:center;
+margin-bottom:20px;border:1px solid var(–cream2);
+}
+.sval{font-size:20px;font-weight:700;color:var(–navy);}
+.slabel{font-size:11px;color:#999;margin-bottom:1px;}
+
+/* ===================== INSTRUCTION BOX ===================== */
+.instruct{
+background:#e8f4fd;border:1px solid #b8d4f0;
+border-radius:8px;padding:11px 14px;font-size:13px;
+margin-bottom:16px;color:#1a4f6e;line-height:1.5;
+}
+
+/* ===================== DRAG & DROP — MOBILE FIRST ===================== */
+/* Items pool */
+.pool{
+display:flex;flex-wrap:wrap;gap:8px;
+min-height:54px;background:var(–cream);
+border:2px dashed var(–cream2);border-radius:9px;
+padding:12px;margin-bottom:18px;
+}
+
+/* Drag cards */
+.dcard{
+background:var(–navy);color:#fff;
+padding:9px 13px;border-radius:7px;
+font-size:13px;font-weight:600;
+cursor:pointer;user-select:none;
+transition:all .18s;border:2px solid transparent;
+position:relative;touch-action:none;
+}
+.dcard:hover{transform:translateY(-2px);box-shadow:var(–sh);}
+.dcard.selected-card{border-color:var(–gold);background:#2a3d6a;transform:translateY(-2px);box-shadow:var(–sh);}
+.dcard.placed-correct{background:var(–green);cursor:default;border-color:var(–green);}
+.dcard.placed-wrong{background:var(–red);animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* Drop zones */
+.zones{display:grid;gap:13px;}
+.zones-2{grid-template-columns:1fr 1fr;}
+.zones-3{grid-template-columns:1fr 1fr 1fr;}
+.zones-4{grid-template-columns:1fr 1fr;}
+@media(max-width:500px){
+.zones-2,.zones-3,.zones-4{grid-template-columns:1fr;}
+}
+.dzone{
+border:2px dashed var(–navy);border-radius:9px;
+padding:12px;min-height:90px;transition:all .18s;
+cursor:pointer;
+}
+.dzone:hover,.dzone.hover-active{
+background:rgba(26,39,68,.06);
+border-color:var(–gold);border-style:solid;
+}
+.dzone-label{
+font-weight:700;font-size:12px;color:var(–navy);
+margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;
+display:flex;align-items:center;gap:7px;pointer-events:none;
+}
+.zone-items{display:flex;flex-wrap:wrap;gap:7px;min-height:36px;pointer-events:none;}
+
+/* ===================== HINT / REVEAL ===================== */
+.hint-box{
+background:#fff8e1;border:1px solid #f0c040;
+border-radius:7px;padding:10px 14px;font-size:13px;
+margin:10px 0;display:none;gap:8px;align-items:flex-start;line-height:1.5;
+}
+.hint-box.show{display:flex;}
+.reveal-box{
+background:#e8f8ef;border:1px solid #82d0a0;
+border-radius:7px;padding:12px 14px;font-size:13px;
+margin:10px 0;display:none;
+}
+.reveal-box.show{display:block;}
+
+/* ===================== FEEDBACK ===================== */
+.fb{
+border-radius:7px;padding:11px 14px;font-size:13px;
+font-weight:600;margin:10px 0;display:none;gap:8px;
+align-items:center;line-height:1.5;
+}
+.fb.show{display:flex;}
+.fb-ok{background:#e8f8ef;color:#145a32;border:1px solid #82d0a0;}
+.fb-err{background:#fde8e6;color:#7b241c;border:1px solid var(–red);}
+
+/* ===================== TRUE/FALSE ===================== */
+.tfq{
+background:var(–cream);border-radius:9px;padding:14px 16px;
+margin-bottom:12px;border:2px solid var(–cream2);transition:all .2s;
+}
+.tfq.ok{border-color:var(–green);background:#e8f8ef;}
+.tfq.wrong{border-color:var(–red);background:#fde8e6;}
+.tfqtext{font-size:14px;font-weight:600;margin-bottom:10px;line-height:1.5;}
+.tfbtns{display:flex;gap:9px;}
+.tfbtn{
+padding:7px 20px;border-radius:7px;font-size:13px;font-weight:700;
+cursor:pointer;border:2px solid transparent;transition:all .18s;font-family:inherit;
+}
+.tfbtn-t{background:#e8f8ef;color:var(–green);border-color:var(–green);}
+.tfbtn-t:hover{background:var(–green);color:#fff;}
+.tfbtn-f{background:#fde8e6;color:var(–red);border-color:var(–red);}
+.tfbtn-f:hover{background:var(–red);color:#fff;}
+.tfbtn:disabled{opacity:.5;cursor:not-allowed;}
+.tfbtn.sel-ok{background:var(–green);color:#fff;}
+.tfbtn.sel-err{background:var(–red);color:#fff;}
+.tf-gate{
+background:var(–navy);color:#fff;border-radius:9px;
+padding:13px 16px;text-align:center;margin:14px 0;font-size:14px;
+}
+
+/* ===================== P&L SPOT ERROR ===================== */
+.pl-wrap{
+background:#f9f9f9;border:2px solid var(–cream2);
+border-radius:9px;padding:16px;font-family:‘Courier New’,monospace;font-size:13px;
+}
+.pl-row{
+display:flex;justify-content:space-between;
+padding:5px 7px;border-radius:5px;line-height:1.6;
+}
+.pl-row.clickable{cursor:pointer;border:1px dashed transparent;}
+.pl-row.clickable:hover{background:rgba(201,168,76,.15);border-color:var(–gold);}
+.pl-row.sel-err{background:#fff3cd;border:1px solid #f0c040;}
+.pl-row.conf-err{background:#fde8e6;border:1px solid var(–red);}
+.pl-row.conf-ok{background:#e8f8ef;border:1px solid var(–green);}
+.pl-sep{border-top:1px solid #ccc;margin-top:3px;font-weight:700;}
+.err-opts{
+display:none;gap:7px;flex-wrap:wrap;
+margin:7px 0 14px;padding:10px;
+background:#fff8e1;border-radius:7px;
+}
+.err-opts.show{display:flex;}
+.err-opt{
+padding:5px 12px;border-radius:6px;border:2px solid var(–cream2);
+background:#fff;font-size:12px;cursor:pointer;font-family:inherit;
+transition:all .15s;
+}
+.err-opt:hover{border-color:var(–navy);background:var(–cream);}
+
+/* ===================== MATCHING ===================== */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:520px){.match-wrap{grid-template-columns:1fr;}}
+.match-col-label{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#888;margin-bottom:8px;text-align:center;}
+.mterms,.mdefs{display:flex;flex-direction:column;gap:7px;}
+.mterm{
+background:var(–navy);color:#fff;padding:9px 12px;
+border-radius:7px;font-size:12px;font-weight:600;
+cursor:pointer;transition:all .18s;border:2px solid transparent;text-align:center;
+}
+.mterm:hover{transform:translateY(-1px);box-shadow:var(–sh);}
+.mterm.sel{border-color:var(–gold);background:#2a3d6a;}
+.mterm.matched{background:var(–green);cursor:default;}
+.mterm.match-err{background:var(–red);animation:shake .4s;}
+.mdef{
+background:var(–cream);border:2px solid var(–cream2);
+padding:9px 12px;border-radius:7px;font-size:12px;
+cursor:pointer;transition:all .18s;line-height:1.4;
+}
+.mdef:hover{border-color:var(–navy);}
+.mdef.sel{border-color:var(–gold);background:#fff8e1;}
+.mdef.matched{border-color:var(–green);background:#e8f8ef;cursor:default;}
+.mdef.match-err{border-color:var(–red);animation:shake .4s;}
+
+/* ===================== CALCULATION ===================== */
+.calc-step{
+background:var(–cream);border-radius:11px;
+padding:18px;margin-bottom:14px;border:2px solid var(–cream2);transition:all .3s;
+}
+.calc-step.locked{opacity:.45;pointer-events:none;}
+.calc-step.active-step{border-color:var(–navy);}
+.calc-step.done-step{border-color:var(–green);background:#e8f8ef;}
+.cstep-num{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(–gold);font-weight:700;margin-bottom:4px;}
+.cstep-title{font-size:15px;font-weight:700;color:var(–navy);margin-bottom:10px;}
+.formula{
+background:var(–navy);color:#fff;border-radius:7px;
+padding:9px 12px;font-family:‘Courier New’,monospace;font-size:12px;margin-bottom:12px;
+}
+.cinput-row{display:flex;gap:9px;align-items:center;}
+.cinput{
+flex:1;padding:11px 14px;border:2px solid var(–cream2);
+border-radius:7px;font-size:15px;font-family:inherit;outline:none;transition:border .2s;
+}
+.cinput:focus{border-color:var(–navy);}
+.cinput.ok{border-color:var(–green);background:#e8f8ef;}
+.cinput.err{border-color:var(–red);}
+
+/* ===================== SCENARIO ===================== */
+.scenario-q{
+background:var(–navy);color:#fff;border-radius:9px;
+padding:16px 18px;margin-bottom:14px;font-size:14px;line-height:1.6;
+}
+.sopts{display:flex;flex-direction:column;gap:9px;}
+.sopt{
+background:var(–cream);border:2px solid var(–cream2);
+border-radius:9px;padding:12px 16px;cursor:pointer;
+transition:all .18s;font-size:13px;font-weight:500;text-align:left;
+font-family:inherit;
+}
+.sopt:hover{border-color:var(–navy);background:#fff;}
+.sopt.ok{border-color:var(–green);background:#e8f8ef;cursor:default;}
+.sopt.err{border-color:var(–red);background:#fde8e6;cursor:default;}
+.sopt:disabled{pointer-events:none;}
+
+/* ===================== LEADERBOARD ===================== */
+.lb{background:#fff;border-radius:11px;padding:18px;box-shadow:var(–sh);margin-top:20px;}
+.lb-title{font-family:‘Playfair Display’,serif;font-size:17px;color:var(–navy);margin-bottom:13px;display:flex;align-items:center;gap:8px;}
+.lb-row{
+display:flex;align-items:center;gap:11px;
+padding:9px 11px;border-radius:7px;margin-bottom:5px;background:var(–cream);
+}
+.lb-row.me{background:rgba(201,168,76,.18);border:1px solid var(–gold);}
+.lb-rank{font-weight:700;font-size:15px;min-width:26px;}
+.lb-name{flex:1;font-weight:600;font-size:13px;}
+.lb-mod{font-size:11px;color:#999;}
+.lb-score{font-weight:700;font-size:15px;color:var(–navy);}
+
+/* ===================== FINAL ===================== */
+.cert{
+background:#fff;border:7px double var(–gold);
+border-radius:14px;padding:32px;margin:20px 0;
+box-shadow:var(–sh2);text-align:center;position:relative;
+}
+.cert-logo{font-family:‘Playfair Display’,serif;font-size:22px;color:var(–gold);}
+.cert-tag{font-size:12px;text-transform:uppercase;letter-spacing:3px;color:#888;margin:6px 0 16px;}
+.cert-name{font-family:‘Playfair Display’,serif;font-size:30px;color:var(–navy);}
+.cert-text{font-size:14px;color:#555;margin:10px 0 18px;line-height:1.6;}
+.cert-score{font-size:48px;font-weight:700;color:var(–gold);}
+.cert-score-lbl{font-size:13px;color:#888;}
+.final-mods{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:20px 0;}
+@media(max-width:480px){.final-mods{grid-template-columns:repeat(3,1fr);}}
+.fmod{background:#fff;border-radius:9px;padding:13px 8px;text-align:center;box-shadow:var(–sh);border-top:4px solid var(–navy);}
+.fmod-n{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#888;}
+.fmod-s{font-size:26px;font-weight:700;color:var(–navy);}
+.fmod-m{font-size:11px;color:#bbb;}
+.summary-box{
+background:var(–navy);color:#fff;border-radius:11px;
+padding:18px;margin-top:20px;text-align:left;
+}
+.summary-box h3{font-family:‘Playfair Display’,serif;font-size:17px;margin-bottom:10px;}
+.summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px;line-height:1.6;}
+@media(max-width:420px){.summary-grid{grid-template-columns:1fr;}}
+
+/* ===================== LECTURER DASHBOARD ===================== */
+#dashView{display:none;padding:20px;max-width:1000px;margin:0 auto;}
+.dash-head{
+background:var(–navy);color:#fff;border-radius:11px;
+padding:18px 22px;margin-bottom:20px;
+display:flex;justify-content:space-between;align-items:center;
+}
+.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+@media(max-width:600px){.dash-stats{grid-template-columns:repeat(2,1fr);}}
+.dstat{background:#fff;border-radius:9px;padding:14px 16px;box-shadow:var(–sh);text-align:center;}
+.dstat-n{font-size:32px;font-weight:700;color:var(–navy);}
+.dstat-l{font-size:12px;color:#888;}
+.dash-tbl{background:#fff;border-radius:11px;box-shadow:var(–sh);overflow:hidden;}
+.dash-tbl table{width:100%;border-collapse:collapse;}
+.dash-tbl th{background:var(–navy);color:#fff;padding:10px 14px;text-align:left;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.dash-tbl td{padding:11px 14px;border-bottom:1px solid var(–cream);font-size:13px;}
+.dash-tbl tr:hover td{background:var(–cream);}
+.dash-tbl tr.stall td{background:#fff3cd;}
+.mbadge{display:inline-block;background:var(–navy);color:#fff;border-radius:10px;padding:2px 9px;font-size:11px;font-weight:600;}
+.sflag{background:var(–red);color:#fff;border-radius:10px;padding:2px 9px;font-size:10px;font-weight:600;}
+.nudge-btn{background:var(–gold);color:var(–navy);border:none;border-radius:7px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;}
+
+/* ===================== NUDGE BANNER ===================== */
+#nudge{
+position:fixed;top:0;left:0;right:0;
+background:var(–gold);color:var(–navy);text-align:center;
+padding:13px;font-size:15px;font-weight:700;z-index:9999;
+transform:translateY(-100%);transition:transform .4s;
+}
+#nudge.show{transform:translateY(0);}
+
+.divider{height:1px;background:var(–cream2);margin:18px 0;}
+</style>
+
+</head>
+<body>
+
+<div id="nudge">📣 Keep going — stay focused and complete the module!</div>
+
+<!-- HEADER -->
+
+<header id="appHeader">
+  <div>
+    <div class="hlogo">a.r.u.</div>
+    <div class="htitle">Financial Management & Markets</div>
+  </div>
+  <div style="display:flex;gap:14px;align-items:center;">
+    <div class="htimer" id="timerEl">60:00</div>
+    <div class="hbadge" id="badgeEl">Student</div>
+  </div>
+</header>
+
+<!-- PROGRESS -->
+
+<div id="progressBar">
+  <div class="ptrack"><div class="pfill" id="pfill" style="width:0%"></div></div>
+  <div class="plabels">
+    <span class="plabel" id="pl0">Module 1</span>
+    <span class="plabel" id="pl1">Module 2</span>
+    <span class="plabel" id="pl2">Module 3</span>
+    <span class="plabel" id="pl3">Module 4</span>
+    <span class="plabel" id="pl4">Module 5</span>
+  </div>
+</div>
+
+<!-- ========== LANDING ========== -->
+
+<div class="screen active" id="s-land">
+  <div class="card">
+    <div style="text-align:center;font-size:44px;margin-bottom:10px;">📊</div>
+    <h1>Financial Management & Markets</h1>
+    <p class="subtitle">MOD010837 — Lecture 7 Interactive Activities</p>
+    <div class="mod-pills">
+      <div class="mpill"><span>1</span>Financial System</div>
+      <div class="mpill"><span>2</span>Sources of Finance</div>
+      <div class="mpill"><span>3</span>Debt vs Equity</div>
+      <div class="mpill"><span>4</span>IPO & Markets</div>
+      <div class="mpill"><span>5</span>IPO Calculations</div>
+    </div>
+    <div class="rules">
+      <div class="rule"><div class="rule-icon">⏱️</div><div><strong>60-minute timer</strong> starts the moment you click Start.</div></div>
+      <div class="rule"><div class="rule-icon">🎯</div><div><strong>3 attempts max</strong> per question, then a hint appears.</div></div>
+      <div class="rule"><div class="rule-icon">🏆</div><div><strong>Live leaderboard</strong> — first-attempt correct scores highest.</div></div>
+      <div class="rule"><div class="rule-icon">🔒</div><div><strong>No skipping</strong> — complete each module to unlock the next.</div></div>
+    </div>
+    <div class="name-row">
+      <input type="text" class="name-in" id="nameIn" placeholder="Enter your full name..." maxlength="40">
+      <button class="btn btn-navy" onclick="startSession()">Start ▶</button>
+    </div>
+    <div class="err" id="nameErr">Please enter your name to begin.</div>
+    <div id="landLB" class="lb" style="display:none;">
+      <div class="lb-title">🏆 Leaderboard</div>
+      <div id="landLBBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODULE 1: Financial System ========== -->
+
+<div class="screen" id="s-m1">
+  <div class="mod-head">
+    <div class="mod-num">Module 1 of 5</div>
+    <div class="mod-title">The Financial System</div>
+    <div class="mod-meta"><span>⏱ ~10 mins</span><span>🎯 100 pts</span><span>📌 Tap-to-Place Activity</span></div>
+  </div>
+  <div class="mod-body">
+    <div class="sbar">
+      <div><div class="slabel">MODULE SCORE</div><div class="sval" id="m1ScoreEl">0 / 100</div></div>
+      <div><div class="slabel">STATUS</div><div id="m1StatusEl" style="font-weight:700;color:#888;">In Progress</div></div>
+    </div>
+    <div class="instruct">
+      💡 <strong>How to play:</strong> Tap a <strong>card</strong> to select it (it will highlight gold), then tap the <strong>correct category box</strong> below to place it. Wrong placements bounce back. <strong>3 attempts per card</strong> before the answer is revealed.
+    </div>
+    <div class="pool" id="m1Pool"></div>
+    <div class="zones zones-4">
+      <div class="dzone" onclick="zoneClick('m1','institutions')" id="dz-m1-institutions">
+        <div class="dzone-label">🏦 Financial Institutions</div>
+        <div class="zone-items" id="zi-m1-institutions"></div>
+      </div>
+      <div class="dzone" onclick="zoneClick('m1','markets')" id="dz-m1-markets">
+        <div class="dzone-label">📈 Financial Markets</div>
+        <div class="zone-items" id="zi-m1-markets"></div>
+      </div>
+      <div class="dzone" onclick="zoneClick('m1','instruments')" id="dz-m1-instruments">
+        <div class="dzone-label">📄 Financial Instruments</div>
+        <div class="zone-items" id="zi-m1-instruments"></div>
+      </div>
+      <div class="dzone" onclick="zoneClick('m1','services')" id="dz-m1-services">
+        <div class="dzone-label">🛎️ Financial Services</div>
+        <div class="zone-items" id="zi-m1-services"></div>
+      </div>
+    </div>
+    <div class="hint-box" id="m1Hint"><span>💡</span><span id="m1HintTxt"></span></div>
+    <div class="reveal-box" id="m1Reveal"></div>
+    <div class="fb" id="m1FB"></div>
+    <div style="text-align:center;margin-top:16px;">
+      <button class="btn btn-navy btn-hidden" id="m1Next" onclick="nextModule(1)">Continue to Module 2 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODULE 2: Sources of Finance ========== -->
+
+<div class="screen" id="s-m2">
+  <div class="mod-head">
+    <div class="mod-num">Module 2 of 5</div>
+    <div class="mod-title">Sources of Finance</div>
+    <div class="mod-meta"><span>⏱ ~12 mins</span><span>🎯 100 pts</span><span>📌 Two-Stage Card Sort</span></div>
+  </div>
+  <div class="mod-body">
+    <div class="sbar">
+      <div><div class="slabel">MODULE SCORE</div><div class="sval" id="m2ScoreEl">0 / 100</div></div>
+      <div><div class="slabel">STAGE</div><div id="m2StageEl" style="font-weight:700;color:var(--navy);">Stage 1 of 2</div></div>
+    </div>
+    <div id="m2s1">
+      <div class="instruct">💡 <strong>Stage 1:</strong> Tap a card, then tap <strong>Internal</strong> or <strong>External</strong> to sort it.</div>
+      <div class="pool" id="m2Pool1"></div>
+      <div class="zones zones-2">
+        <div class="dzone" onclick="zoneClick('m2s1','internal')" id="dz-m2s1-internal">
+          <div class="dzone-label">🏢 Internal Finance</div>
+          <div class="zone-items" id="zi-m2s1-internal"></div>
+        </div>
+        <div class="dzone" onclick="zoneClick('m2s1','external')" id="dz-m2s1-external">
+          <div class="dzone-label">🌐 External Finance</div>
+          <div class="zone-items" id="zi-m2s1-external"></div>
+        </div>
+      </div>
+      <div class="hint-box" id="m2s1Hint"><span>💡</span><span id="m2s1HintTxt"></span></div>
+      <div class="reveal-box" id="m2s1Reveal"></div>
+      <div class="fb" id="m2s1FB"></div>
+    </div>
+    <div id="m2s2" style="display:none;">
+      <div class="divider"></div>
+      <div class="instruct">💡 <strong>Stage 2:</strong> Now sort the <strong>external</strong> sources by duration. Tap card then tap the correct duration box.</div>
+      <div class="pool" id="m2Pool2"></div>
+      <div class="zones zones-3">
+        <div class="dzone" onclick="zoneClick('m2s2','short')" id="dz-m2s2-short">
+          <div class="dzone-label">⚡ Short-Term</div>
+          <div class="zone-items" id="zi-m2s2-short"></div>
+        </div>
+        <div class="dzone" onclick="zoneClick('m2s2','medium')" id="dz-m2s2-medium">
+          <div class="dzone-label">📅 Medium-Term</div>
+          <div class="zone-items" id="zi-m2s2-medium"></div>
+        </div>
+        <div class="dzone" onclick="zoneClick('m2s2','long')" id="dz-m2s2-long">
+          <div class="dzone-label">🔒 Long-Term/Permanent</div>
+          <div class="zone-items" id="zi-m2s2-long"></div>
+        </div>
+      </div>
+      <div class="hint-box" id="m2s2Hint"><span>💡</span><span id="m2s2HintTxt"></span></div>
+      <div class="reveal-box" id="m2s2Reveal"></div>
+      <div class="fb" id="m2s2FB"></div>
+    </div>
+    <div class="divider"></div>
+    <div style="text-align:center;"><button class="btn btn-navy btn-hidden" id="m2Next" onclick="nextModule(2)">Continue to Module 3 →</button></div>
+  </div>
+</div>
+
+<!-- ========== MODULE 3: Debt vs Equity ========== -->
+
+<div class="screen" id="s-m3">
+  <div class="mod-head">
+    <div class="mod-num">Module 3 of 5</div>
+    <div class="mod-title">Debt vs Equity</div>
+    <div class="mod-meta"><span>⏱ ~12 mins</span><span>🎯 100 pts</span><span>📌 Spot the Error + True/False</span></div>
+  </div>
+  <div class="mod-body">
+    <div class="sbar">
+      <div><div class="slabel">MODULE SCORE</div><div class="sval" id="m3ScoreEl">0 / 100</div></div>
+      <div><div class="slabel">PART</div><div id="m3PartEl" style="font-weight:700;color:var(--navy);">Part A</div></div>
+    </div>
+    <!-- PART A -->
+    <div id="m3pa">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:7px;">Part A: Spot the Error</h3>
+      <div class="instruct">💡 The P&L statement below has <strong>3 deliberate errors</strong>. Tap a row you think is wrong, then select the correct fix. Find all 3 to move to Part B.</div>
+      <div style="font-size:13px;color:#888;margin-bottom:10px;">Errors found: <strong id="errCt">0</strong> / 3</div>
+      <div class="pl-wrap" id="plWrap">
+        <div class="pl-row"><span>Revenue</span><span>£500,000</span></div>
+        <div class="pl-row"><span>Less: Cost of Sales</span><span>(£200,000)</span></div>
+        <div class="pl-row pl-sep"><span><strong>Gross Profit</strong></span><span><strong>£300,000</strong></span></div>
+        <div class="pl-row clickable" data-eid="opex" onclick="plRowClick(this)"><span>Less: Operating Expenses</span><span>(£80,000)</span></div>
+        <div class="pl-row pl-sep"><span><strong>Operating Profit</strong></span><span><strong>£220,000</strong></span></div>
+        <div class="pl-row clickable" data-eid="interest" onclick="plRowClick(this)"><span>Less: Interest Expense (Operating Cost) ←</span><span>(£15,000)</span></div>
+        <div class="pl-row clickable" data-eid="dividend" onclick="plRowClick(this)"><span>Less: Dividend Paid (Finance Cost) ←</span><span>(£10,000)</span></div>
+        <div class="pl-row clickable" data-eid="equity" onclick="plRowClick(this)"><span>Less: Share Capital Issued (Expense) ←</span><span>(£50,000)</span></div>
+        <div class="pl-row pl-sep"><span><strong>Net Profit Before Tax</strong></span><span><strong>£145,000</strong></span></div>
+      </div>
+      <div class="err-opts" id="errOpts"></div>
+      <div class="fb" id="m3aFB"></div>
+    </div>
+    <!-- PART B -->
+    <div id="m3pb" style="display:none;">
+      <div class="divider"></div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:7px;">Part B: True or False?</h3>
+      <div class="instruct">💡 Answer all 8 statements. You need <strong>6/8</strong> to proceed. Score below 6 — questions shuffle and you retry.</div>
+      <div class="tf-gate" id="tfGate">Minimum required: <strong>6/8</strong> — Current: <strong id="tfScore">0/8</strong></div>
+      <div id="tfContainer"></div>
+      <div class="fb" id="m3bFB"></div>
+      <div style="text-align:center;margin-top:12px;"><button class="btn btn-navy btn-hidden" id="m3Retry" onclick="loadTF()">🔄 Retry (questions will shuffle)</button></div>
+    </div>
+    <div class="divider"></div>
+    <div style="text-align:center;"><button class="btn btn-navy btn-hidden" id="m3Next" onclick="nextModule(3)">Continue to Module 4 →</button></div>
+  </div>
+</div>
+
+<!-- ========== MODULE 4: IPO & Capital Markets ========== -->
+
+<div class="screen" id="s-m4">
+  <div class="mod-head">
+    <div class="mod-num">Module 4 of 5</div>
+    <div class="mod-title">IPO & Capital Markets</div>
+    <div class="mod-meta"><span>⏱ ~12 mins</span><span>🎯 100 pts</span><span>📌 Sort + Match + Scenario</span></div>
+  </div>
+  <div class="mod-body">
+    <div class="sbar">
+      <div><div class="slabel">MODULE SCORE</div><div class="sval" id="m4ScoreEl">0 / 100</div></div>
+      <div><div class="slabel">PART</div><div id="m4PartEl" style="font-weight:700;color:var(--navy);">Part A</div></div>
+    </div>
+    <!-- PART A -->
+    <div id="m4pa">
+      <h3 style="font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:7px;">Part A: Primary vs Secondary Markets</h3>
+      <div class="instruct">💡 Tap a card, then tap the correct market type. 3 attempts per card.</div>
+      <div class="pool" id="m4Pool"></div>
+      <div class="zones zones-2">
+        <div class="dzone" onclick="zoneClick('m4','primary')" id="dz-m4-primary">
+          <div class="dzone-label">🆕 Primary Market</div>
+          <div class="zone-items" id="zi-m4-primary"></div>
+        </div>
+        <div class="dzone" onclick="zoneClick('m4','secondary')" id="dz-m4-secondary">
+          <div class="dzone-label">🔄 Secondary Market</div>
+          <div class="zone-items" id="zi-m4-secondary"></div>
+        </div>
+      </div>
+      <div class="hint-box" id="m4Hint"><span>💡</span><span id="m4HintTxt"></span></div>
+      <div class="reveal-box" id="m4Reveal"></div>
+      <div class="fb" id="m4aFB"></div>
+    </div>
+    <!-- PART B -->
+    <div id="m4pb" style="display:none;">
+      <div class="divider"></div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:7px;">Part B: Key Terms Matching</h3>
+      <div class="instruct">💡 Tap a <strong>term</strong> (left), then tap the matching <strong>definition</strong> (right).</div>
+      <div class="match-wrap">
+        <div><div class="match-col-label">Terms</div><div class="mterms" id="mTerms"></div></div>
+        <div><div class="match-col-label">Definitions</div><div class="mdefs" id="mDefs"></div></div>
+      </div>
+      <div class="hint-box" id="m4bHint"><span>💡</span><span id="m4bHintTxt">Click a term first, then click the matching definition.</span></div>
+      <div class="fb" id="m4bFB"></div>
+    </div>
+    <!-- PART C -->
+    <div id="m4pc" style="display:none;">
+      <div class="divider"></div>
+      <h3 style="font-family:'Playfair Display',serif;color:var(--navy);margin-bottom:7px;">Part C: Scenario Question</h3>
+      <div class="scenario-q">🏢 <strong>GreenTech Ltd</strong> is a private company raising £50m for expansion. They offer shares to the public for the <strong>first time</strong>, engaging an investment bank to set the offer price, and listing on the London Stock Exchange.<br><br><strong>Question:</strong> In which market does this transaction take place, and why?</div>
+      <div class="sopts" id="m4cOpts">
+        <button class="sopt" onclick="checkScenario(this,'wrong')">Secondary market — shares will be traded on the stock exchange after listing.</button>
+        <button class="sopt" onclick="checkScenario(this,'correct')">Primary market — new shares are being issued directly by the company to investors for the first time.</button>
+        <button class="sopt" onclick="checkScenario(this,'wrong')">Money market — the company is raising short-term capital through a financial institution.</button>
+        <button class="sopt" onclick="checkScenario(this,'wrong')">Primary market — an investment bank is involved in the transaction.</button>
+      </div>
+      <div class="fb" id="m4cFB"></div>
+    </div>
+    <div class="divider"></div>
+    <div style="text-align:center;"><button class="btn btn-navy btn-hidden" id="m4Next" onclick="nextModule(4)">Continue to Module 5 →</button></div>
+  </div>
+</div>
+
+<!-- ========== MODULE 5: IPO Calculations ========== -->
+
+<div class="screen" id="s-m5">
+  <div class="mod-head">
+    <div class="mod-num">Module 5 of 5</div>
+    <div class="mod-title">IPO Calculation Challenge</div>
+    <div class="mod-meta"><span>⏱ ~12 mins</span><span>🎯 100 pts</span><span>📌 Green Energy Corp Case Study</span></div>
+  </div>
+  <div class="mod-body">
+    <div class="sbar">
+      <div><div class="slabel">MODULE SCORE</div><div class="sval" id="m5ScoreEl">0 / 100</div></div>
+      <div><div class="slabel">STEPS DONE</div><div id="m5StepsEl" style="font-weight:700;color:var(--navy);">0 / 4</div></div>
+    </div>
+    <div style="background:var(--navy);color:#fff;border-radius:9px;padding:16px 18px;margin-bottom:18px;font-size:13px;line-height:1.8;">
+      <strong>📋 Green Energy Corp IPO — Case Study Data</strong><br>
+      Shares issued: <strong>5 million</strong> &nbsp;|&nbsp; IPO offer price: <strong>$20/share</strong> &nbsp;|&nbsp; Underwriting fee: <strong>5%</strong> of gross proceeds &nbsp;|&nbsp; Other expenses: <strong>$1,500,000</strong>
+    </div>
+    <div class="calc-step active-step" id="cs1">
+      <div class="cstep-num">Step 1 of 4</div>
+      <div class="cstep-title">Calculate the Gross Proceeds</div>
+      <div class="formula">Gross Proceeds = Number of Shares × IPO Offer Price per Share</div>
+      <div style="font-size:12px;color:#666;margin-bottom:9px;">Type your answer in dollars — no commas (e.g. 100000000)</div>
+      <div class="cinput-row">
+        <span style="font-weight:700;color:#666;">$</span>
+        <input type="number" class="cinput" id="c1in" placeholder="Enter amount...">
+        <button class="btn btn-navy btn-sm" onclick="checkCalc(1)">Check ✓</button>
+      </div>
+      <div class="hint-box" id="c1Hint"><span>💡</span><span>Multiply 5,000,000 × $20. Gross means total <em>before</em> any deductions.</span></div>
+      <div class="fb" id="c1FB"></div>
+    </div>
+    <div class="calc-step locked" id="cs2">
+      <div class="cstep-num">Step 2 of 4</div>
+      <div class="cstep-title">Calculate the Underwriting Fee</div>
+      <div class="formula">Underwriting Fee = Gross Proceeds × Underwriting Fee %</div>
+      <div style="font-size:12px;color:#666;margin-bottom:9px;">Type your answer in dollars.</div>
+      <div class="cinput-row">
+        <span style="font-weight:700;color:#666;">$</span>
+        <input type="number" class="cinput" id="c2in" placeholder="Enter amount...">
+        <button class="btn btn-navy btn-sm" onclick="checkCalc(2)">Check ✓</button>
+      </div>
+      <div class="hint-box" id="c2Hint"><span>💡</span><span>Take your Step 1 answer and multiply by 0.05 (5%).</span></div>
+      <div class="fb" id="c2FB"></div>
+    </div>
+    <div class="calc-step locked" id="cs3">
+      <div class="cstep-num">Step 3 of 4</div>
+      <div class="cstep-title">Calculate the Net Proceeds to the Firm</div>
+      <div class="formula">Net Proceeds = Gross Proceeds − Underwriting Fee − Other Expenses</div>
+      <div style="font-size:12px;color:#666;margin-bottom:9px;">Other expenses = $1,500,000. Type your answer in dollars.</div>
+      <div class="cinput-row">
+        <span style="font-weight:700;color:#666;">$</span>
+        <input type="number" class="cinput" id="c3in" placeholder="Enter amount...">
+        <button class="btn btn-navy btn-sm" onclick="checkCalc(3)">Check ✓</button>
+      </div>
+      <div class="hint-box" id="c3Hint"><span>💡</span><span>Net = Gross − Underwriting Fee − $1,500,000. Use your Step 1 and Step 2 answers.</span></div>
+      <div class="fb" id="c3FB"></div>
+    </div>
+    <div class="calc-step locked" id="cs4">
+      <div class="cstep-num">Step 4 of 4 — Interpretation</div>
+      <div class="cstep-title">What does the Net Proceeds figure tell us?</div>
+      <div class="sopts" id="c4Opts">
+        <button class="sopt" onclick="checkStep4(this,'wrong')">It is the total revenue Green Energy Corp will earn from product sales after listing.</button>
+        <button class="sopt" onclick="checkStep4(this,'correct')">It is the actual cash Green Energy Corp receives to fund expansion after paying all IPO costs.</button>
+        <button class="sopt" onclick="checkStep4(this,'wrong')">It is the amount investors receive as dividends in the first year after the IPO.</button>
+        <button class="sopt" onclick="checkStep4(this,'wrong')">It is the market capitalisation of Green Energy Corp immediately after listing.</button>
+      </div>
+      <div class="fb" id="c4FB"></div>
+    </div>
+    <div class="divider"></div>
+    <div style="text-align:center;"><button class="btn btn-gold btn-hidden" id="m5Next" onclick="nextModule(5)">🏁 View My Results</button></div>
+  </div>
+</div>
+
+<!-- ========== FINAL ========== -->
+
+<div class="screen" id="s-final">
+  <div style="text-align:center;padding:32px 16px 0;">
+    <div style="font-size:56px;">🎓</div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:28px;color:var(--navy);margin:10px 0;">Session Complete!</h1>
+  </div>
+  <div class="cert" id="certEl">
+    <div class="cert-logo">a.r.u.</div>
+    <div class="cert-tag">Certificate of Completion</div>
+    <div class="cert-name" id="certName">—</div>
+    <div class="cert-text">has successfully completed the interactive learning activities for<br><strong>Financial Management and Financial Markets — Lecture 7</strong></div>
+    <div class="cert-score" id="certScore">0</div>
+    <div class="cert-score-lbl">TOTAL POINTS OUT OF 500</div>
+  </div>
+  <div class="final-mods" id="finalMods"></div>
+  <div class="lb" id="finalLB">
+    <div class="lb-title">🏆 Final Leaderboard</div>
+    <div id="finalLBBody"></div>
+  </div>
+  <div class="summary-box">
+    <h3>📚 Key Concepts Covered Today</h3>
+    <div class="summary-grid">
+      <div>✅ The four components of the financial system</div>
+      <div>✅ Internal vs external sources of finance</div>
+      <div>✅ Short, medium and long-term finance</div>
+      <div>✅ Debt finance: bonds, debentures, interest</div>
+      <div>✅ Equity finance: shares, dividends</div>
+      <div>✅ P&L accounting treatment of debt and equity</div>
+      <div>✅ Primary vs secondary capital markets</div>
+      <div>✅ IPO process and key terminology</div>
+      <div>✅ Gross proceeds, underwriting fees, net proceeds</div>
+      <div>✅ Capital structure and gearing</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== LECTURER DASHBOARD ========== -->
+
+<div id="dashView">
+  <div class="dash-head">
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:20px;">Lecturer Dashboard</div>
+      <div style="font-size:12px;opacity:.75;margin-top:3px;">Financial Management & Markets — Lecture 7</div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="nudge-btn" onclick="sendNudge()">📣 Nudge All</button>
+      <button class="nudge-btn" onclick="refreshDash()" style="background:#fff;">🔄 Refresh</button>
+    </div>
+  </div>
+  <div class="dash-stats">
+    <div class="dstat"><div class="dstat-n" id="ds-total">0</div><div class="dstat-l">Registered</div></div>
+    <div class="dstat"><div class="dstat-n" id="ds-active">0</div><div class="dstat-l">Active</div></div>
+    <div class="dstat"><div class="dstat-n" id="ds-done">0</div><div class="dstat-l">Completed</div></div>
+    <div class="dstat"><div class="dstat-n" id="ds-stall" style="color:var(--red);">0</div><div class="dstat-l" style="color:var(--red);">⚠ Stalled</div></div>
+  </div>
+  <div class="dash-tbl">
+    <table>
+      <thead><tr><th>#</th><th>Name</th><th>Module</th><th>Score</th><th>Time</th><th>Status</th></tr></thead>
+      <tbody id="dashBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ================================================================
+// DATA
+// ================================================================
+const M1ITEMS=[
+  {id:'banks',text:'Banks',zone:'institutions'},
+  {id:'insurance',text:'Insurance Companies',zone:'institutions'},
+  {id:'invest_co',text:'Investment Companies',zone:'institutions'},
+  {id:'brokerage',text:'Brokerage Firm',zone:'institutions'},
+  {id:'stock_mkt',text:'Stock Market',zone:'markets'},
+  {id:'forex',text:'Forex Markets',zone:'markets'},
+  {id:'bonds_mkt',text:'Bonds Markets',zone:'markets'},
+  {id:'crypto',text:'Cryptocurrency Market',zone:'markets'},
+  {id:'cash',text:'Cash',zone:'instruments'},
+  {id:'shares',text:'Shares of Stock',zone:'instruments'},
+  {id:'options',text:'Options',zone:'instruments'},
+  {id:'futures',text:'Futures',zone:'instruments'},
+];
+// Note: Financial Services intentionally same as institutions per lecture slide
+// Simplifying to 4 unique categories with 3 items each for clarity
+
+const M2S1ITEMS=[
+  {id:'retained',text:'Retained Earnings',zone:'internal'},
+  {id:'working_cap',text:'Working Capital',zone:'internal'},
+  {id:'sale_assets',text:'Sale of Assets',zone:'internal'},
+  {id:'overdraft',text:'Bank Overdraft',zone:'external'},
+  {id:'trade_credit',text:'Trade Credit',zone:'external'},
+  {id:'debt_factor',text:'Debt Factoring',zone:'external'},
+  {id:'leasing',text:'Leasing',zone:'external'},
+  {id:'hire_purchase',text:'Hire Purchase',zone:'external'},
+  {id:'share_issue',text:'Share Issue',zone:'external'},
+  {id:'debenture',text:'Debenture',zone:'external'},
+  {id:'grants',text:'Grants',zone:'external'},
+  {id:'mortgage',text:'Long-Term Mortgage',zone:'external'},
+];
+
+const M2S2ITEMS=[
+  {id:'overdraft',text:'Bank Overdraft',zone:'short'},
+  {id:'trade_credit',text:'Trade Credit',zone:'short'},
+  {id:'debt_factor',text:'Debt Factoring',zone:'short'},
+  {id:'leasing',text:'Leasing',zone:'medium'},
+  {id:'hire_purchase',text:'Hire Purchase',zone:'medium'},
+  {id:'share_issue',text:'Share Issue',zone:'long'},
+  {id:'debenture',text:'Debenture',zone:'long'},
+  {id:'grants',text:'Grants',zone:'long'},
+  {id:'mortgage',text:'Long-Term Mortgage',zone:'long'},
+];
+
+const M4ITEMS=[
+  {id:'ipo_tx',text:'Company issues new shares on the stock exchange for the first time',zone:'primary'},
+  {id:'govt_bond',text:'Government issues new bonds to raise capital',zone:'primary'},
+  {id:'rights',text:'Listed company raises new equity by offering shares to existing shareholders',zone:'primary'},
+  {id:'share_trade',text:'An investor buys existing Tesla shares on the NYSE',zone:'secondary'},
+  {id:'bond_trade',text:'A fund sells government bonds it already holds',zone:'secondary'},
+  {id:'investor_trade',text:'Two investors trade company shares between each other on the exchange',zone:'secondary'},
+];
+
+const M4TERMS=[
+  {id:'common_stock',term:'Common Stock',def:'Units of ownership in a public company, allowing holders to vote and receive dividends'},
+  {id:'issue_price',term:'Issue Price',def:'The initial selling price of shares to investors before public trading starts'},
+  {id:'underwriter',term:'Underwriter',def:'The investment bank managing the IPO, setting the offer price and distributing shares'},
+  {id:'market_cap',term:'Market Capitalisation',def:'Total value of a company\'s outstanding shares — indicates size and compares firms'},
+  {id:'price_band',term:'Price Band',def:'The range within which investors can bid for IPO shares'},
+  {id:'lot_size',term:'Lot Size',def:'The minimum number of shares you can bid for in an IPO'},
+];
+
+const TF_QUESTIONS=[
+  {q:'Interest expense on debt is classified as an operating expense in the P&L.',ans:false,expl:'Interest is a finance cost, not an operating expense — it arises from financing decisions, not day-to-day operations.'},
+  {q:'Equity finance requires mandatory annual repayments to shareholders.',ans:false,expl:'Equity has no mandatory repayment. Dividends are paid at the company\'s discretion when profitable.'},
+  {q:'A debenture is typically unsecured, relying on the issuer\'s creditworthiness.',ans:true,expl:'Correct. Debentures are long-term debt instruments usually not backed by specific assets.'},
+  {q:'When a company issues new shares, this increases its liabilities on the balance sheet.',ans:false,expl:'Issuing shares increases equity (share capital & reserves), not liabilities. Debt creates liabilities.'},
+  {q:'A bond is generally lower risk to the investor than a debenture.',ans:true,expl:'Correct. Bonds are often secured on assets, making them lower risk than unsecured debentures.'},
+  {q:'Dividends paid by a company reduce its retained earnings on the balance sheet.',ans:true,expl:'Correct. Dividends are distributions of profit and reduce retained earnings (equity), not the P&L.'},
+  {q:'Retained earnings are a form of external finance because they come from profits.',ans:false,expl:'Retained earnings are internal finance — funds generated and kept within the business.'},
+  {q:'A highly geared company has a larger proportion of finance from equity than from loans.',ans:false,expl:'High gearing means MORE debt relative to equity. A highly geared company relies heavily on borrowed funds.'},
+];
+
+const PL_ERRORS={
+  interest:{correct:'Interest should be labelled as Finance Cost — NOT an Operating Cost',wrongs:['Interest should not appear in P&L at all','Interest is a type of equity payment'],expl:'Interest arises from financing decisions, not from running the business. It belongs below Operating Profit as a Finance Cost.'},
+  dividend:{correct:'Dividends do NOT appear in P&L — they reduce retained earnings on the Balance Sheet',wrongs:['Dividends should be in operating expenses','Dividends are a type of liability'],expl:'Dividends are distributions of profit, not an expense. They appear on the Balance Sheet (reducing retained earnings), not in the P&L.'},
+  equity:{correct:'Share Capital Issued is NOT an expense — it increases equity on the Balance Sheet',wrongs:['Share capital should be in operating expenses','Share capital should be a finance cost'],expl:'Issuing shares creates equity, not an expense. It appears on the Balance Sheet under equity, not in the P&L at all.'},
+};
+
+// ================================================================
+// STATE
+// ================================================================
+const LB_KEY='aru_finance_lb_v3';
+const NUDGE_KEY='aru_nudge_v3';
+
+let ST={
+  name:'',startTime:null,timerInt:null,
+  curModule:0,totalScore:0,
+  modScores:[0,0,0,0,0],
+  completed:false,lastAct:Date.now()
+};
+
+// Per-module attempt tracking
+let attempts={};
+function getAtt(key){if(!attempts[key])attempts[key]=0;return attempts[key];}
+function incAtt(key){if(!attempts[key])attempts[key]=0;attempts[key]++;return attempts[key];}
+
+// Selected card tracking
+let selectedCardId=null;
+let selectedCardModule=null;
+
+// ================================================================
+// LEADERBOARD
+// ================================================================
+function getLB(){try{const r=localStorage.getItem(LB_KEY);return r?JSON.parse(r):[]}catch(e){return[]}}
+function saveLB(){
+  const lb=getLB();
+  const idx=lb.findIndex(s=>s.name===ST.name);
+  const entry={name:ST.name,score:ST.totalScore,module:ST.curModule,
+    time:ST.startTime?Math.floor((Date.now()-ST.startTime)/1000):0,
+    completed:ST.completed,lastUpdate:Date.now()};
+  if(idx>=0)lb[idx]=entry;else lb.push(entry);
+  lb.sort((a,b)=>b.score-a.score);
+  try{localStorage.setItem(LB_KEY,JSON.stringify(lb))}catch(e){}
+}
+function renderLB(bodyId){
+  const lb=getLB();const el=document.getElementById(bodyId);if(!el)return;
+  if(!lb.length){el.innerHTML='<div style="color:#888;text-align:center;padding:14px;font-size:13px;">No entries yet — be the first!</div>';return;}
+  const medals=['🥇','🥈','🥉'];
+  el.innerHTML=lb.slice(0,10).map((s,i)=>`
+    <div class="lb-row ${s.name===ST.name?'me':''}">
+      <div class="lb-rank">${medals[i]||i+1}</div>
+      <div class="lb-name">${esc(s.name)}${s.name===ST.name?' (You)':''}</div>
+      <div class="lb-mod">Mod ${s.module}</div>
+      <div class="lb-score">${s.score}pts</div>
+    </div>`).join('');
+}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+// ================================================================
+// TIMER
+// ================================================================
+function startTimer(){
+  ST.startTime=Date.now();
+  ST.timerInt=setInterval(()=>{
+    const elapsed=Math.floor((Date.now()-ST.startTime)/1000);
+    const rem=Math.max(0,3600-elapsed);
+    const m=Math.floor(rem/60),s=rem%60;
+    const el=document.getElementById('timerEl');
+    if(el){
+      el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+      el.className='htimer';
+      if(rem<600)el.classList.add('warn');
+      if(rem<300){el.className='htimer danger';}
+      if(rem===0){clearInterval(ST.timerInt);alert('⏱ Time up! Score: '+ST.totalScore+'/500');nextModule(ST.curModule,true);}
+    }
+    checkNudge();
+    saveLB();
+  },1000);
+}
+
+function checkNudge(){
+  try{
+    const n=localStorage.getItem(NUDGE_KEY);
+    if(n){const d=JSON.parse(n);if(d.t>(Date.now()-10000)){showNudge();}}
+  }catch(e){}
+}
+function showNudge(){
+  const el=document.getElementById('nudge');
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),5000);
+}
+
+// ================================================================
+// SESSION START
+// ================================================================
+function startSession(){
+  const inp=document.getElementById('nameIn');
+  const name=(inp.value||'').trim();
+  if(!name||name.length<2){document.getElementById('nameErr').style.display='block';inp.focus();return;}
+  document.getElementById('nameErr').style.display='none';
+  ST.name=name;
+  document.getElementById('badgeEl').textContent=name.split(' ')[0];
+  document.getElementById('appHeader').style.display='flex';
+  document.getElementById('progressBar').style.display='block';
+  saveLB();
+  startTimer();
+  goScreen('m1');
+  updateProg(1);
+  initM1();
+}
+
+// ================================================================
+// SCREEN / PROGRESS
+// ================================================================
+function goScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('s-'+id);
+  if(el)el.classList.add('active');
+  window.scrollTo(0,0);
+}
+function updateProg(n){
+  ST.curModule=n;
+  const pct=((n-1)/5)*100;
+  document.getElementById('pfill').style.width=pct+'%';
+  for(let i=0;i<5;i++){
+    const lbl=document.getElementById('pl'+i);
+    lbl.className='plabel'+(i<n-1?' done':i===n-1?' cur':'');
+  }
+  saveLB();
+}
+function nextModule(n,forced){
+  if(n<5){
+    const nxt=n+1;
+    goScreen('m'+nxt);
+    updateProg(nxt);
+    if(nxt===2)initM2();
+    else if(nxt===3)initM3();
+    else if(nxt===4)initM4();
+    else if(nxt===5)initM5();
+  }else{
+    ST.completed=true;
+    clearInterval(ST.timerInt);
+    saveLB();
+    showFinal();
+  }
+}
+function addPts(mod,pts){
+  ST.modScores[mod-1]+=pts;
+  ST.totalScore+=pts;
+  ST.lastAct=Date.now();
+  const el=document.getElementById('m'+mod+'ScoreEl');
+  if(el)el.textContent=ST.modScores[mod-1]+' / 100';
+  saveLB();
+}
+
+// ================================================================
+// TAP-TO-PLACE ENGINE
+// ================================================================
+function makeCard(item,poolId,modKey){
+  const el=document.createElement('div');
+  el.className='dcard';
+  el.textContent=item.text;
+  el.id='card-'+modKey+'-'+item.id;
+  el.dataset.cid=item.id;
+  el.dataset.cmod=modKey;
+  el.onclick=()=>selectCard(item.id,modKey,el);
+  document.getElementById(poolId).appendChild(el);
+}
+
+function selectCard(id,mod,el){
+  if(el.classList.contains('placed-correct'))return;
+  // Deselect previous
+  if(selectedCardId){
+    const prev=document.getElementById('card-'+selectedCardModule+'-'+selectedCardId);
+    if(prev)prev.classList.remove('selected-card');
+  }
+  // If clicking same card, deselect
+  if(selectedCardId===id&&selectedCardModule===mod){
+    selectedCardId=null;selectedCardModule=null;return;
+  }
+  selectedCardId=id;
+  selectedCardModule=mod;
+  el.classList.add('selected-card');
+  // Highlight drop zones
+  document.querySelectorAll('.dzone').forEach(z=>z.classList.add('hover-active'));
+  ST.lastAct=Date.now();
+}
+
+function zoneClick(mod,zone){
+  if(!selectedCardId||selectedCardModule!==mod){
+    // Pulse zones to remind user to select a card first
+    document.querySelectorAll('.dzone').forEach(z=>{
+      z.style.borderColor='var(--gold)';
+      setTimeout(()=>z.style.borderColor='',600);
+    });
+    return;
+  }
+  document.querySelectorAll('.dzone').forEach(z=>z.classList.remove('hover-active'));
+  const itemId=selectedCardId;
+  const cardEl=document.getElementById('card-'+mod+'-'+itemId);
+  if(cardEl)cardEl.classList.remove('selected-card');
+  selectedCardId=null;selectedCardModule=null;
+  placeCard(mod,itemId,zone);
+}
+
+function placeCard(mod,itemId,zone){
+  // Find item data
+  let items,hints,reveals,fb,scoreModule,onAllCorrect;
+  if(mod==='m1'){items=M1ITEMS;scoreModule=1;hints='m1Hint';reveals='m1Reveal';fb='m1FB';onAllCorrect=m1Complete;}
+  else if(mod==='m2s1'){items=M2S1ITEMS;scoreModule=2;hints='m2s1Hint';reveals='m2s1Reveal';fb='m2s1FB';onAllCorrect=m2s1Complete;}
+  else if(mod==='m2s2'){items=M2S2ITEMS;scoreModule=2;hints='m2s2Hint';reveals='m2s2Reveal';fb='m2s2FB';onAllCorrect=m2s2Complete;}
+  else if(mod==='m4'){items=M4ITEMS;scoreModule=4;hints='m4Hint';reveals='m4Reveal';fb='m4aFB';onAllCorrect=m4aComplete;}
+
+  const item=items.find(i=>i.id===itemId);
+  if(!item)return;
+  const attKey=mod+'-'+itemId;
+  const att=incAtt(attKey);
+  const cardEl=document.getElementById('card-'+mod+'-'+itemId);
+
+  if(item.zone===zone){
+    // ✅ CORRECT
+    if(cardEl){cardEl.classList.remove('selected-card');cardEl.classList.add('placed-correct');}
+    const zoneItems=document.getElementById('zi-'+mod+'-'+zone);
+    if(zoneItems&&cardEl)zoneItems.appendChild(cardEl);
+    const pts=att===1?10:att===2?6:2;
+    addPts(scoreModule,pts);
+    showFB(fb,'ok',`✅ Correct! "${item.text}" goes in ${item.zone.replace(/_/g,' ')}.`);
+    // Check all correct
+    const allDone=items.every(i=>{
+      const c=document.getElementById('card-'+mod+'-'+i.id);
+      return c&&c.classList.contains('placed-correct');
+    });
+    if(allDone&&onAllCorrect)onAllCorrect();
+  }else{
+    // ❌ WRONG
+    if(cardEl){
+      cardEl.classList.add('placed-wrong');
+      setTimeout(()=>cardEl.classList.remove('placed-wrong'),600);
+    }
+    showFB(fb,'err',`❌ Not quite. Try again — select the card and tap the correct category.`);
+    if(att===2){
+      // Show hint
+      const hEl=document.getElementById(hints);
+      const htEl=document.getElementById(hints.replace('Hint','HintTxt'));
+      if(hEl&&htEl){htEl.textContent=`Hint: "${item.text}" belongs in the "${item.zone.replace(/_/g,' ')}" category.`;hEl.classList.add('show');}
+    }
+    if(att>=3){
+      // Auto-reveal
+      if(cardEl){cardEl.classList.add('placed-correct');cardEl.style.opacity='0.65';}
+      const zoneItems=document.getElementById('zi-'+mod+'-'+item.zone);
+      if(zoneItems&&cardEl)zoneItems.appendChild(cardEl);
+      const rEl=document.getElementById(reveals);
+      if(rEl){rEl.innerHTML=`<strong>✅ Revealed:</strong> "${item.text}" → <strong>${item.zone.replace(/_/g,' ')}</strong>. ${getRevealExpl(mod,item)}`;rEl.classList.add('show');setTimeout(()=>rEl.classList.remove('show'),5000);}
+      const allDone=items.every(i=>{const c=document.getElementById('card-'+mod+'-'+i.id);return c&&c.classList.contains('placed-correct');});
+      if(allDone&&onAllCorrect)onAllCorrect();
+    }
+  }
+}
+
+function getRevealExpl(mod,item){
+  const expls={
+    banks:'Banks are financial institutions that lend and accept deposits.',
+    stock_mkt:'The stock market is a financial market where shares are bought and sold.',
+    cash:'Cash is a basic financial instrument.',
+    // etc — generic fallback
+  };
+  return expls[item.id]||'';
+}
+
+function showFB(id,type,msg){
+  const el=document.getElementById(id);
+  if(!el)return;
+  el.className='fb fb-'+(type==='ok'?'ok':'err')+' show';
+  el.innerHTML='<span>'+(type==='ok'?'':'')+'</span><span>'+msg+'</span>';
+}
+
+// ================================================================
+// MODULE 1
+// ================================================================
+function initM1(){
+  const pool=document.getElementById('m1Pool');
+  pool.innerHTML='';
+  [...M1ITEMS].sort(()=>Math.random()-.5).forEach(item=>makeCard(item,'m1Pool','m1'));
+}
+function m1Complete(){
+  document.getElementById('m1StatusEl').textContent='✅ Complete!';
+  document.getElementById('m1StatusEl').style.color='var(--green)';
+  showFB('m1FB','ok','🎉 All items correctly categorised! The financial system has four key components.');
+  document.getElementById('m1Next').classList.remove('btn-hidden');
+}
+
+// ================================================================
+// MODULE 2
+// ================================================================
+function initM2(){
+  const pool=document.getElementById('m2Pool1');
+  pool.innerHTML='';
+  [...M2S1ITEMS].sort(()=>Math.random()-.5).forEach(item=>makeCard(item,'m2Pool1','m2s1'));
+}
+function m2s1Complete(){
+  showFB('m2s1FB','ok','✅ Stage 1 done! Now sort the external sources by duration below.');
+  document.getElementById('m2StageEl').textContent='Stage 2 of 2';
+  setTimeout(()=>{
+    document.getElementById('m2s2').style.display='block';
+    const pool2=document.getElementById('m2Pool2');
+    pool2.innerHTML='';
+    [...M2S2ITEMS].sort(()=>Math.random()-.5).forEach(item=>makeCard(item,'m2Pool2','m2s2'));
+  },700);
+}
+function m2s2Complete(){
+  showFB('m2s2FB','ok','🎉 Both stages complete! You can classify finance by source AND duration.');
+  document.getElementById('m2Next').classList.remove('btn-hidden');
+}
+
+// ================================================================
+// MODULE 3 — SPOT THE ERROR
+// ================================================================
+let errFound=0;
+let plAtts={interest:0,dividend:0,equity:0};
+let selRow=null;
+
+function initM3(){
+  errFound=0;plAtts={interest:0,dividend:0,equity:0};selRow=null;
+  document.getElementById('errCt').textContent='0';
+  loadTF();
+}
+
+function plRowClick(el){
+  if(el.classList.contains('conf-err')||el.classList.contains('conf-ok'))return;
+  const eid=el.dataset.eid;
+  if(!PL_ERRORS[eid]){showFB('m3aFB','err','This row has no error — try one of the rows marked with ←');return;}
+  // Deselect others
+  document.querySelectorAll('.pl-row.sel-err').forEach(r=>r.classList.remove('sel-err'));
+  el.classList.add('sel-err');
+  selRow=eid;
+  // Show options
+  const err=PL_ERRORS[eid];
+  const opts=[err.correct,...err.wrongs].sort(()=>Math.random()-.5);
+  const errOpts=document.getElementById('errOpts');
+  errOpts.className='err-opts show';
+  errOpts.innerHTML='<strong style="width:100%;font-size:12px;color:var(--navy);">What is the error? Choose the correct fix:</strong>'+
+    opts.map(o=>`<button class="err-opt" onclick="checkErrFix('${eid}','${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join('');
+  ST.lastAct=Date.now();
+}
+
+function checkErrFix(eid,chosen,btn){
+  const err=PL_ERRORS[eid];
+  plAtts[eid]=(plAtts[eid]||0)+1;
+  const rowEl=document.querySelector(`.pl-row[data-eid="${eid}"]`);
+  const fb=document.getElementById('m3aFB');
+  const errOpts=document.getElementById('errOpts');
+
+  if(chosen===err.correct){
+    rowEl.classList.remove('sel-err');rowEl.classList.add('conf-err');
+    errFound++;document.getElementById('errCt').textContent=errFound;
+    errOpts.className='err-opts';selRow=null;
+    const pts=plAtts[eid]===1?10:5;
+    addPts(3,pts);
+    showFB('m3aFB','ok','✅ Correct! '+err.expl);
+    if(errFound>=3){
+      setTimeout(()=>{
+        document.getElementById('m3PartEl').textContent='Part B';
+        document.getElementById('m3pb').style.display='block';
+        renderTF();
+      },900);
+    }
+  }else{
+    btn.style.color='var(--red)';btn.style.borderColor='var(--red)';
+    showFB('m3aFB','err','❌ Not the right fix. Think carefully about where this item belongs.');
+    if(plAtts[eid]>=3){
+      rowEl.classList.remove('sel-err');rowEl.classList.add('conf-err');
+      errFound++;document.getElementById('errCt').textContent=errFound;
+      errOpts.className='err-opts';
+      showFB('m3aFB','ok','💡 Revealed: '+err.expl);
+      if(errFound>=3){
+        setTimeout(()=>{
+          document.getElementById('m3PartEl').textContent='Part B';
+          document.getElementById('m3pb').style.display='block';
+          renderTF();
+        },900);
+      }
+    }
+  }
+  ST.lastAct=Date.now();
+}
+
+// ================================================================
+// TRUE / FALSE
+// ================================================================
+let tfShuf=[],tfAns=[],tfOk=0;
+
+function loadTF(){
+  tfShuf=[...TF_QUESTIONS].sort(()=>Math.random()-.5);
+  tfAns=new Array(8).fill(null);tfOk=0;
+  document.getElementById('tfScore').textContent='0/8';
+  document.getElementById('m3Retry').classList.add('btn-hidden');
+  document.getElementById('m3bFB').className='fb';
+  renderTF();
+}
+
+function renderTF(){
+  const c=document.getElementById('tfContainer');
+  c.innerHTML=tfShuf.map((q,i)=>`
+    <div class="tfq" id="tfq${i}">
+      <div class="tfqtext">${i+1}. ${q.q}</div>
+      <div class="tfbtns">
+        <button class="tfbtn tfbtn-t" onclick="answerTF(${i},true,this)">TRUE</button>
+        <button class="tfbtn tfbtn-f" onclick="answerTF(${i},false,this)">FALSE</button>
+      </div>
+      <div class="hint-box" id="tfh${i}"><span>💡</span><span>${q.expl}</span></div>
+    </div>`).join('');
+}
+
+function answerTF(i,ans,btn){
+  if(tfAns[i]!==null)return;
+  const q=tfShuf[i];
+  const qEl=document.getElementById('tfq'+i);
+  qEl.querySelectorAll('.tfbtn').forEach(b=>b.disabled=true);
+  if(ans===q.ans){
+    tfAns[i]=true;btn.classList.add('sel-ok');qEl.classList.add('ok');
+    addPts(3,5);tfOk++;
+  }else{
+    tfAns[i]=false;btn.classList.add('sel-err');qEl.classList.add('wrong');
+    qEl.querySelectorAll('.tfbtn').forEach(b=>{
+      if((b.classList.contains('tfbtn-t')&&q.ans===true)||(b.classList.contains('tfbtn-f')&&q.ans===false))b.classList.add('sel-ok');
+    });
+    document.getElementById('tfh'+i).classList.add('show');
+  }
+  const done=tfAns.filter(a=>a!==null).length;
+  document.getElementById('tfScore').textContent=tfOk+'/'+done;
+  if(done===8)checkTFDone();
+  ST.lastAct=Date.now();
+}
+
+function checkTFDone(){
+  if(tfOk>=6){
+    showFB('m3bFB','ok','🎉 You scored '+tfOk+'/8 — gate passed!');
+    document.getElementById('m3Next').classList.remove('btn-hidden');
+  }else{
+    showFB('m3bFB','err','❌ You scored '+tfOk+'/8 — need 6/8 to proceed. Questions will shuffle when you retry.');
+    document.getElementById('m3Retry').classList.remove('btn-hidden');
+  }
+}
+
+// ================================================================
+// MODULE 4
+// ================================================================
+function initM4(){
+  const pool=document.getElementById('m4Pool');
+  pool.innerHTML='';
+  [...M4ITEMS].sort(()=>Math.random()-.5).forEach(item=>makeCard(item,'m4Pool','m4'));
+}
+
+function m4aComplete(){
+  showFB('m4aFB','ok','✅ All classified correctly! Moving to Part B — Key Terms Matching.');
+  document.getElementById('m4PartEl').textContent='Part B';
+  setTimeout(()=>{document.getElementById('m4pb').style.display='block';initMatch();},700);
+}
+
+// Matching
+let matchSel=null;
+let matchDone=0;
+let matchAtts={};
+
+function initMatch(){
+  const tEl=document.getElementById('mTerms');
+  const dEl=document.getElementById('mDefs');
+  tEl.innerHTML='';dEl.innerHTML='';matchDone=0;matchSel=null;matchAtts={};
+  M4TERMS.forEach(t=>{
+    const tel=document.createElement('div');
+    tel.className='mterm';tel.textContent=t.term;tel.dataset.mid=t.id;
+    tel.onclick=()=>matchTermClick(tel);
+    tEl.appendChild(tel);
+    matchAtts[t.id]=0;
+  });
+  [...M4TERMS].sort(()=>Math.random()-.5).forEach(t=>{
+    const del=document.createElement('div');
+    del.className='mdef';del.textContent=t.def;del.dataset.mid=t.id;
+    del.onclick=()=>matchDefClick(del);
+    dEl.appendChild(del);
+  });
+  document.getElementById('m4bHint').classList.add('show');
+}
+
+function matchTermClick(el){
+  if(el.classList.contains('matched'))return;
+  document.querySelectorAll('.mterm.sel').forEach(e=>e.classList.remove('sel'));
+  if(matchSel===el.dataset.mid){matchSel=null;return;}
+  el.classList.add('sel');matchSel=el.dataset.mid;
+}
+
+function matchDefClick(el){
+  if(!matchSel)return;
+  if(el.classList.contains('matched'))return;
+  const termId=matchSel;const defId=el.dataset.mid;
+  matchAtts[termId]++;
+  const termEl=document.querySelector(`.mterm[data-mid="${termId}"]`);
+  if(termId===defId){
+    termEl.classList.remove('sel');termEl.classList.add('matched');
+    el.classList.add('matched');matchSel=null;
+    const pts=matchAtts[termId]===1?10:matchAtts[termId]===2?6:2;
+    addPts(4,pts);matchDone++;
+    showFB('m4bFB','ok',`✅ Correct match! (${matchDone}/${M4TERMS.length} done)`);
+    if(matchDone===M4TERMS.length){
+      setTimeout(()=>{
+        document.getElementById('m4PartEl').textContent='Part C';
+        document.getElementById('m4pc').style.display='block';
+        document.getElementById('m4bHint').classList.remove('show');
+      },600);
+    }
+  }else{
+    termEl.classList.add('match-err');el.classList.add('match-err');
+    setTimeout(()=>{termEl.classList.remove('match-err','sel');el.classList.remove('match-err');matchSel=null;},600);
+    showFB('m4bFB','err','❌ Not a match. Select the term again and try a different definition.');
+    if(matchAtts[termId]>=3){
+      const correctDef=document.querySelector(`.mdef[data-mid="${termId}"]`);
+      if(termEl&&correctDef){termEl.classList.remove('sel');termEl.classList.add('matched');correctDef.classList.add('matched');matchDone++;}
+      matchSel=null;
+      if(matchDone===M4TERMS.length){
+        setTimeout(()=>{document.getElementById('m4PartEl').textContent='Part C';document.getElementById('m4pc').style.display='block';},600);
+      }
+    }
+  }
+  ST.lastAct=Date.now();
+}
+
+let scenAtts=0;
+function checkScenario(btn,result){
+  scenAtts++;
+  const opts=document.querySelectorAll('#m4cOpts .sopt');
+  if(result==='correct'){
+    btn.classList.add('ok');opts.forEach(o=>o.disabled=true);
+    const pts=scenAtts===1?15:8;addPts(4,pts);
+    showFB('m4cFB','ok','✅ Correct! An IPO occurs in the <strong>primary market</strong> — new shares are issued directly by the company. The secondary market handles only existing shares being traded between investors.');
+    document.getElementById('m4Next').classList.remove('btn-hidden');
+  }else{
+    btn.classList.add('err');
+    setTimeout(()=>btn.classList.remove('err'),700);
+    showFB('m4cFB','err','❌ Not quite. Is the company issuing NEW shares or are investors trading EXISTING ones?');
+    if(scenAtts>=3){
+      opts.forEach(o=>{if(o.getAttribute('onclick').includes('correct'))o.classList.add('ok');o.disabled=true;});
+      document.getElementById('m4Next').classList.remove('btn-hidden');
+    }
+  }
+  ST.lastAct=Date.now();
+}
+
+// ================================================================
+// MODULE 5 — CALCULATIONS
+// ================================================================
+const CORRECT_CALCS={1:100000000,2:5000000,3:93500000};
+let calcAtts2={1:0,2:0,3:0,4:0};
+let stepsOk=0;
+
+function initM5(){stepsOk=0;calcAtts2={1:0,2:0,3:0,4:0};}
+
+function checkCalc(step){
+  const input=document.getElementById('c'+step+'in');
+  const val=parseFloat(input.value);
+  const fb=document.getElementById('c'+step+'FB');
+  const hint=document.getElementById('c'+step+'Hint');
+  calcAtts2[step]++;
+
+  if(!val||isNaN(val)){showFB('c'+step+'FB','err','⚠️ Please type a number.');return;}
+  const correct=CORRECT_CALCS[step];
+  const tol=correct*0.005;
+
+  if(Math.abs(val-correct)<=tol){
+    input.classList.add('ok');
+    const pts=calcAtts2[step]===1?25:calcAtts2[step]===2?15:8;
+    addPts(5,pts);stepsOk++;
+    document.getElementById('m5StepsEl').textContent=stepsOk+' / 4';
+    document.getElementById('cs'+step).classList.remove('active-step');
+    document.getElementById('cs'+step).classList.add('done-step');
+    const labels=['','✅ Gross Proceeds = $100,000,000 (5,000,000 × $20)','✅ Underwriting Fee = $5,000,000 ($100m × 5%)','✅ Net Proceeds = $93,500,000 ($100m − $5m − $1.5m)'];
+    showFB('c'+step+'FB','ok',labels[step]);
+    if(step<3){const ns=document.getElementById('cs'+(step+1));ns.classList.remove('locked');ns.classList.add('active-step');}
+    else{const s4=document.getElementById('cs4');s4.classList.remove('locked');s4.classList.add('active-step');}
+  }else{
+    input.classList.add('err');setTimeout(()=>input.classList.remove('err'),700);
+    if(calcAtts2[step]===2){hint.classList.add('show');showFB('c'+step+'FB','err','❌ Incorrect. A hint has appeared — check your calculation.');}
+    else if(calcAtts2[step]>=3){
+      input.value=correct;input.classList.remove('err');input.classList.add('ok');
+      hint.classList.remove('show');
+      const revs=['','💡 Revealed: 5,000,000 × $20 = $100,000,000','💡 Revealed: $100,000,000 × 5% = $5,000,000','💡 Revealed: $100,000,000 − $5,000,000 − $1,500,000 = $93,500,000'];
+      showFB('c'+step+'FB','ok',revs[step]);
+      document.getElementById('cs'+step).classList.remove('active-step');
+      document.getElementById('cs'+step).classList.add('done-step');
+      stepsOk++;document.getElementById('m5StepsEl').textContent=stepsOk+' / 4';
+      if(step<3){const ns=document.getElementById('cs'+(step+1));ns.classList.remove('locked');ns.classList.add('active-step');}
+      else{const s4=document.getElementById('cs4');s4.classList.remove('locked');s4.classList.add('active-step');}
+    }else{showFB('c'+step+'FB','err','❌ Incorrect — double-check your calculation and try again.');}
+  }
+  ST.lastAct=Date.now();
+}
+
+let s4Atts=0;
+function checkStep4(btn,result){
+  s4Atts++;
+  const opts=document.querySelectorAll('#c4Opts .sopt');
+  if(result==='correct'){
+    btn.classList.add('ok');opts.forEach(o=>o.disabled=true);
+    addPts(5,s4Atts===1?10:5);stepsOk++;
+    document.getElementById('m5StepsEl').textContent='4 / 4';
+    document.getElementById('cs4').classList.remove('active-step');
+    document.getElementById('cs4').classList.add('done-step');
+    showFB('c4FB','ok','✅ Correct! Net proceeds is the actual cash Green Energy Corp receives after paying all IPO costs — the money available for business growth.');
+    document.getElementById('m5Next').classList.remove('btn-hidden');
+  }else{
+    btn.classList.add('err');setTimeout(()=>btn.classList.remove('err'),600);
+    showFB('c4FB','err','❌ Think: what happens to the money AFTER all costs are paid?');
+    if(s4Atts>=3){
+      opts.forEach(o=>{if(o.getAttribute('onclick').includes('correct'))o.classList.add('ok');o.disabled=true;});
+      document.getElementById('m5Next').classList.remove('btn-hidden');
+    }
+  }
+  ST.lastAct=Date.now();
+}
+
+// ================================================================
+// FINAL
+// ================================================================
+function showFinal(){
+  goScreen('final');
+  document.getElementById('certName').textContent=ST.name;
+  document.getElementById('certScore').textContent=ST.totalScore;
+  const mods=document.getElementById('finalMods');
+  const names=['Financial System','Sources of Finance','Debt vs Equity','IPO & Markets','IPO Calcs'];
+  mods.innerHTML=ST.modScores.map((s,i)=>`
+    <div class="fmod">
+      <div class="fmod-n">Mod ${i+1}</div>
+      <div style="font-size:9px;color:#aaa;margin-bottom:4px;">${names[i]}</div>
+      <div class="fmod-s">${s}</div>
+      <div class="fmod-m">/ 100</div>
+    </div>`).join('');
+  renderLB('finalLBBody');
+  document.getElementById('pfill').style.width='100%';
+  for(let i=0;i<5;i++)document.getElementById('pl'+i).className='plabel done';
+}
+
+// ================================================================
+// LECTURER DASHBOARD
+// ================================================================
+function initDash(){
+  document.getElementById('appHeader').style.display='none';
+  document.getElementById('progressBar').style.display='none';
+  document.querySelectorAll('.screen').forEach(s=>s.style.display='none');
+  const dash=document.getElementById('dashView');
+  dash.style.display='block';
+  refreshDash();
+  setInterval(refreshDash,15000);
+}
+
+function refreshDash(){
+  const lb=getLB();const now=Date.now();const fiveMin=300000;
+  let total=lb.length,active=0,done=0,stall=0;
+  lb.forEach(s=>{
+    if(s.completed)done++;
+    else if(now-s.lastUpdate<fiveMin)active++;
+    else stall++;
+  });
+  document.getElementById('ds-total').textContent=total;
+  document.getElementById('ds-active').textContent=active;
+  document.getElementById('ds-done').textContent=done;
+  document.getElementById('ds-stall').textContent=stall;
+  const tbody=document.getElementById('dashBody');
+  if(!lb.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:#888;padding:24px;">No students yet. Share the page link.</td></tr>';return;}
+  tbody.innerHTML=lb.map((s,i)=>{
+    const isStall=!s.completed&&(now-s.lastUpdate>fiveMin);
+    const m=Math.floor(s.time/60),sec=s.time%60;
+    return`<tr class="${isStall?'stall':''}">
+      <td>${i+1}</td>
+      <td><strong>${esc(s.name)}</strong></td>
+      <td><span class="mbadge">Module ${s.module}</span></td>
+      <td><strong>${s.score}</strong></td>
+      <td>${m}m ${sec}s</td>
+      <td>${s.completed?'<span style="color:var(--green);font-weight:700;">✅ Done</span>':isStall?'<span class="sflag">⚠ Stalled</span>':'<span style="color:#2980b9;font-weight:600;">🔵 Active</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function sendNudge(){
+  try{localStorage.setItem(NUDGE_KEY,JSON.stringify({t:Date.now()}));}catch(e){}
+  alert('📣 Nudge sent to all students!');
+}
+
+// ================================================================
+// INIT
+// ================================================================
+window.addEventListener('DOMContentLoaded',()=>{
+  if(location.search.includes('lecturer')){initDash();return;}
+  // Show leaderboard on landing
+  const lb=getLB();
+  if(lb.length){document.getElementById('landLB').style.display='block';renderLB('landLBBody');}
+  document.getElementById('nameIn').addEventListener('keydown',e=>{if(e.key==='Enter')startSession();});
+  // Refresh leaderboard every 10s on landing
+  setInterval(()=>{
+    if(document.getElementById('s-land').classList.contains('active')){
+      const lb2=getLB();
+      if(lb2.length){document.getElementById('landLB').style.display='block';renderLB('landLBBody');}
+    }
+  },10000);
+});
+</script>
+
+</body>
+</html>
